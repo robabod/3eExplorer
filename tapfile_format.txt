@@ -1,0 +1,118 @@
+TAP File Format
+
+The .TAP files contain blocks of tape-saved data.
+All blocks start with two bytes specifying how many bytes will follow
+(not counting the two length bytes).
+Then raw tape data follows, including the flag and checksum bytes.
+The checksum is the bitwise XOR of all bytes including the flag byte.
+For example, when you execute the line SAVE "ROM" CODE 0,2 this will result:
+
+             |------ Spectrum-generated data -------|       |---------|
+
+       13 00 00 03 52 4f 4d 7x20 02 00 00 00 00 80 f1 04 00 ff f3 af a3
+
+       ^^^^^...... first block is 19 bytes (17 bytes+flag+checksum)
+             ^^... flag byte (A reg, 00 for headers, ff for data blocks)
+                ^^ first byte of header, indicating a code block
+
+       file name ..^^^^^^^^^^^^^
+       header info ..............^^^^^^^^^^^^^^^^^
+       checksum of header .........................^^
+       length of second block ........................^^^^^
+       flag byte ............................................^^
+       first two bytes of rom .................................^^^^^
+       checksum (checkbittoggle would be a better name!).............^^
+
+Note that it is possible to join .TAP files by simply stringing them together,
+for example COPY /B FILE1.TAP + FILE2.TAP ALL.TAP
+
+For completeness, I'll include the structure of a tape header.
+A header always consists of 17 bytes:
+
+        Byte    Length  Description
+        ---------------------------
+        0       1       Type (0,1,2 or 3)
+        1       10      Filename (padded with blanks)
+        11      2       Length of data block
+        13      2       Parameter 1
+        15      2       Parameter 2
+
+The type is 0,1,2 or 3 for a Program, Number array, Character array or Code file.
+A SCREEN$ file is regarded as a Code file with start address 16384 and
+length 6912 decimal. If the file is a Program file, parameter 1 holds the
+autostart line number (or a number >=32768 if no LINE parameter was given) and
+parameter 2 holds the start of the variable area relative to the start of the
+program. If it's a Code file, parameter 1 holds the start of the code block
+when saved, and parameter 2 holds 32768. For data files finally, the byte at
+position 14 decimal holds the variable name.
+
+
+
+Some code...
+
+
+// check filesize
+ifs.seekg(0, std::ios::end);
+int filesize = ifs.tellg();
+ifs.seekg(0, std::ios::beg);
+if (filesize > 0xffff) filesize = 0xffff;
+char* filebuf = new char[filesize + 3];
+ifs.read (&filebuf[3], filesize);
+ifs.close();
+
+// fix our filename length
+zxfile.resize(10, ' ');
+
+// generate our header...
+/*
+Byte    Length  Description
+---------------------------
+0       1       Type (0,1,2 or 3)
+1       10      Filename (padded with blanks)
+11      2       Length of data block
+13      2       Parameter 1
+15      2       Parameter 2
+*/
+
+char header[20];
+header[ 0] = 0x13;	// length low
+header[ 1] = 0x00;	// length high
+header[ 2] = 0x00;	// flag "header"
+header[ 3] = 0x03;	// code block
+strncpy(&header[ 4], zxfile.c_str(), 10);
+header[15] = (filesize / 256);
+header[14] = filesize - (256 * header[15]);
+header[17] = (start_addr / 256);
+header[16] = start_addr - (256 * header[17]);
+header[18] = 0x00;
+header[19] = (char)0x80;
+
+// work out the checksum
+char chk = 0;
+for (int ii = 2; ii < 20; ++ii)
+{
+	chk ^= header[ii];
+}
+
+ofs.write(header, 20);
+ofs.write(&chk, 1);
+
+
+int t_filesize = filesize + 2;
+filebuf[2] = (char)0xff;
+filebuf[1] = (t_filesize / 256);
+filebuf[0] = t_filesize - (256 * filebuf[1]);
+
+chk = 0;
+for (ii = 2; ii < t_filesize + 1; ++ii)
+{
+	chk ^= filebuf[ii];
+}
+
+ofs.write(filebuf, filesize + 3);
+ofs.write(&chk, 1);
+
+ofs.close();
+
+
+

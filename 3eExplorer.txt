@@ -1,0 +1,90 @@
+3eExplorer v0.1.0.2
+=-----------------=
+
+
+Introduction:
+=============
+
+3eExplorer is a utility for Windows to allow the examination and manipulation of
+images of drives used by the +3e. The +3e, as developed by Garry Lancaster, is a
+modification of the standard ROMs of the Sinclair ZX Spectrum +2a/+3 to allow
+them to use large capacity storage interfaces in the same way as a normal 3"
+floppy disc. There are several storage devices supported, including the DivIDE,
+ZXCF, ZXATASP, with each device requiring a different set of ROMs. There are
+additional alterations to the ROMs including bugfixes and "windowed" BASIC text
+output. It's a really useful modification, and easy to implement (with only two
+EPROMs).
+
+Currently the +3e uses a custom format for the discs, PLUSIDEDOS, which allows
+a single disk to be partitioned into several distinct areas conforming to the
+theoretical +3DOS limit of a 32Mb partition size. Because of this it can be
+tricky to swap files between the ZX Spectrum and a PC. This is where 3eExplorer
+comes in. It allows you to open an HDF image file of a PLUSIDEDOS disk and
+browse the files stored on it. Currently it is read-only, allowing you to
+extract files from the image into a number of formats on your PC. Importing new
+files is a planned addition. It is also planned to support more image-types such
+as .dsk.
+
+
+
+
+Supported formats:
+==================
+
+Image Formats:
+--------------
++ HDF v1.0/v1.1
+  + PLUSIDEDOS
+    + 0x03 : +3DOS Partitions
+
+Export Formats:
+---------------
++ TAP / Headerless TAP
++ BIN
+
+Import Formats:
+---------------
+None. Yet.
+
+Notes:
+------
+While the image file is opened read-only, it wouldn't hurt to back it up first.
+This is a beta application after all.
+
+
+
+Contact:
+========
+Author: Robert 'icabod' Cooper
+Email:  icabod@raww.org
+WWW:    http://www.icabod.org/3eExplorer/
+
+
+
+History:
+========
+
+v0.1.0.2 - 06/08/2007
+------
+- Fixed reading 16-bit images from 8-bit devices.
+
+
+v0.1.0.1 - 03/08/2007 - first public beta release
+------
++ Added additional menu items for extraction.
++ Added extract to binary file.
++ Added option to extract with/without +3dos header.
++ Added File Status dialog, allowing you to flush the cache.
++ Added some code that's not complete so you should never see it :]
++ Added an application icon.
++ Much code shuffling.
+
+
+v0.1.0.0 - 31/07/2007 - non-public beta release
+------
++ First release.
+
+
+
+
+Documentation produced on: 

@@ -1,0 +1,53 @@
+File headers
+
+Tape files have headers which contain some system information. +3DOS
+files may, or may not, have headers. All files created by BASIC's SAVE
+command will have headers.
+
+The +3DOS header mechanism provides a dedicated 8 byte area in each
+headed file reserved for BASIC's use. The remainder of the header is
+reserved for +3DOS. This 8 byte header is utilised in files created by
+BASIC commands (see DOS OPEN description).
+
++3DOS files may have a single header in the first 128 bytes of the
+file - the header record. These headers are detected by a 'signature'
+and checksum. If the signature and checksum are as expected, then a
+header is present; if not, these is no header. Thus, it is possible,
+but unlikely, that a file without a header could be mistaken for one
+with a header.
+
+The format of the header record is as follows:
+
+	Bytes 0...7	- +3DOS signature - 'PLUS3DOS'
+	Byte 8		- 1Ah (26) Soft-EOF (end of file)
+	Byte 9		- Issue number
+	Byte 10		- Version number
+	Bytes 11...14	- Length of the file in bytes, 32 bit number,
+			    least significant byte in lowest address
+	Bytes 15...22	- +3 BASIC header data
+	Bytes 23...126	- Reserved (set to 0)
+	Byte 127	- Checksum (sum of bytes 0...126 modulo 256)
+
+The issue and version numbers are provided for any future
+expansion. The issue number must equal the software's issue number;
+the version number must be less than or equal to the software's
+version number.
+
++3DOS performs all the necessary header 'house-keeping'. A pointer to
++3 BASIC's 8 byte header area may be returned using DOS REF HEAD. It
+is never necessary to write directly to the 128 byte header.
+
+
+
++3 BASIC header:
+0x0f : Type
+0x10 : FileSize High
+0x11 : FileSize Low
+0x12 : Parameter1 high : Start Address / RunLine
+0x13 : Parameter1 Low
+0x14 : Parameter2 high
+0x15 : Parameter2 Low
+0x16 : ??
+
+
+
