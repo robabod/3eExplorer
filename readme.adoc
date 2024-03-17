@@ -1,0 +1,11 @@
+= 3eExplorer
+
+3eExplorer is a simple program to allow the exploration of disc images in the ZX Spectrum +3e format on the Windows Operating System.  It allow browsing disc images and extracting files from them.
+
+== Disclaimer
+
+This software was written by Robert 'icabod' Cooper a long time ago, and is provided as-is, with no support or warranty.
+
+== Licenses
+
+This source code is released under the link:LICENSE[MIT License].
